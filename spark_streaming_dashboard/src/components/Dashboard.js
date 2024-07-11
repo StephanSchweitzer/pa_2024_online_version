@@ -31,7 +31,7 @@ const Dashboard = () => {
     const [top5ActiveUsers, setTop5ActiveUsers] = useState([]);
 
     useEffect(() => {
-        const socket = new WebSocket('ws://172.22.134.31:3001');
+        const socket = new WebSocket('wss://deepwoke.com/ws');
 
         socket.onopen = () => {
             console.log('WebSocket connection opened');

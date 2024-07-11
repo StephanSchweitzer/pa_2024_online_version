@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="WebServers">
+    <option name="servers">
+      <webServer id="e5329327-d700-4474-b7ac-c56981da7bcd" name="ambServer" url="https://deepwoke.com">
+        <fileTransfer rootFolder="/var/www/deepwoke.com/pa_2024_online_version/spark_streaming_dashboard" accessType="SFTP" host="165.22.205.196" port="22" sshConfigId="19283ee9-f009-4610-900c-fd2176fb290b" sshConfig="root@165.22.205.196:22 password">
+          <advancedOptions>
+            <advancedOptions dataProtectionLevel="Private" passiveMode="true" shareSSLContext="true" />
+          </advancedOptions>
+        </fileTransfer>
+      </webServer>
+    </option>
+  </component>
+</project>

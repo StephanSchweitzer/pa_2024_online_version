@@ -2,14 +2,14 @@ const express = require('express');
 const http = require('http');
 const WebSocket = require('ws');
 const next = require('next');
+const { createProxyMiddleware } = require('http-proxy-middleware');
 const cors = require('cors');
 const debug = require('debug')('myapp:server');
 const axios = require('axios');
-
-const dev = process.env.NODE_ENV !== 'production';
-const app = next({ dev, dir: './src' });
-const handle = app.getRequestHandler();
 const url = require('url');
+
+const app = next({ dev: true, dir: './src' });
+const handle = app.getRequestHandler();
 
 app.prepare().then(() => {
     const server = express();
@@ -20,10 +20,16 @@ app.prepare().then(() => {
         credentials: true
     }));
 
-    let sparkClient = null;
-    const httpServer = http.createServer(server);
+    // Proxy WebSocket connections for webpack HMR
+    server.use('/pa_2024_online_version/spark_streaming_dashboard/_next/webpack-hmr', createProxyMiddleware({
+        target: 'ws://localhost:3000',
+        ws: true,
+        changeOrigin: true,
+        logLevel: 'debug'
+    }));
 
-    // Configure WebSocket server
+    // Setup WebSocket server for other usage
+    const httpServer = http.createServer(server);
     const wss = new WebSocket.Server({ server: httpServer });
 
     wss.on('connection', (ws, req) => {
@@ -32,8 +38,7 @@ app.prepare().then(() => {
 
         console.log(`New client connected: ${clientType}`);
 
-        if (clientType === 'spark')
-        {
+        if (clientType === 'spark') {
             sparkClient = ws;
             console.log('Spark client connected');
         }
@@ -51,19 +56,12 @@ app.prepare().then(() => {
                 return;
             }
 
-            if (parsedMessage.type == "inbound")
-            {
-                console.log(JSON.stringify(parsedMessage))
-                console.log("sending to spark")
-                //ws.send(JSON.stringify(parsedMessage));
-                sparkClient.send(JSON.stringify(parsedMessage))
-            }
-
-            //This section only exists because I haven't saved to mongodb in spark yet, and will soon be removed
-            else
-            {
+            if (parsedMessage.type == "inbound") {
+                console.log(JSON.stringify(parsedMessage));
+                console.log("sending to spark");
+                sparkClient.send(JSON.stringify(parsedMessage));
+            } else {
                 try {
-
                     await axios.post('http://localhost:3002/messages', { message: parsedMessage });
                     console.log('Message sent to hatespeech_api');
                 } catch (err) {
@@ -97,8 +95,8 @@ app.prepare().then(() => {
     });
 
     const PORT = process.env.PORT || 3001;
-    httpServer.listen(PORT, () => {
-        debug(`Server is running on port ${PORT}`);
-        console.log(`Server is running on port ${PORT}`);
+    httpServer.listen(PORT, (err) => {
+        if (err) throw err;
+        console.log(`> Ready on http://localhost:${PORT}`);
     });
 });
