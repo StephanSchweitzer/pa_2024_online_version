@@ -34,14 +34,12 @@ object Consumer {
   implicit val messageEncoder: Encoder[Message] = Encoders.product[Message]
 
   def main(args: Array[String]): Unit = {
-    val host = "172.22.134.31" // WSL IP address
-    val port = 3001 // WebSocket server port
 
     Logger.getLogger("org").setLevel(Level.WARN)
     Logger.getLogger("akka").setLevel(Level.WARN)
 
     def connectToWebSocket(): Unit = {
-      wsClient = new WebSocketClient(new URI(s"ws://$host:$port?clientType=spark")) {
+      wsClient = new WebSocketClient(new URI(s"wss://deepwoke.com/ws?clientType=spark")) {
         override def onOpen(handshakedata: ServerHandshake): Unit = {
           println("WebSocket connection opened")
           isConnected = true
@@ -88,7 +86,7 @@ object Consumer {
       .getOrCreate()
 
     spark.sparkContext.setLogLevel("WARN")
-
+    println
     val csvDirectory = "./produced_data"
     //val checkpointLocation = "./checkpoint"
 
@@ -141,7 +139,7 @@ object Consumer {
 
     // Function to call the hate speech detection API
     def detectHateSpeech(messages: Seq[Message]): Seq[HateSpeechDetectionResponse] = {
-      val url = new URL("http://172.22.134.31:3002/detect")
+      val url = new URL("http://deepwoke.com/api")
       val connection = url.openConnection().asInstanceOf[HttpURLConnection]
       connection.setRequestMethod("POST")
       connection.setRequestProperty("Content-Type", "application/json; charset=UTF-8")

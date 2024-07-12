@@ -15,7 +15,7 @@ app.use((req, res, next) => {
     next();
 });
 
-mongoose.connect('mongodb://172.22.128.1:27017/messages', { useNewUrlParser: true, useUnifiedTopology: true })
+mongoose.connect('mongodb://127.0.0.1:27017/messages', { useNewUrlParser: true, useUnifiedTopology: true })
     .then(() => console.log('Connected to MongoDB'))
     .catch((err) => {
         console.error('Failed to connect to MongoDB', err);

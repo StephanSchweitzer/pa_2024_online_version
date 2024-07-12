@@ -1,22 +1,21 @@
 import discord
 import os
-import requests
-import websocket
 import json
 import time
+from websocket import WebSocketApp, WebSocket
+from dotenv import load_dotenv, dotenv_values
 
+# Set the WebSocket URL to the server's address
+bot_url = "wss://deepwoke.com/ws"
 
-# bot_url = "http://90.60.20.92:8000/classify/"
-# bot_url = "ws://localhost:3001"
-bot_url = "ws://localhost:3001"
-
+# Function to connect to the WebSocket
 def connect_to_websocket():
     global ws
     try:
-        ws = websocket.WebSocketApp(bot_url,
-                                    on_message=on_message,
-                                    on_error=on_error,
-                                    on_close=on_close)
+        ws = WebSocketApp(bot_url,
+                          on_message=on_message,
+                          on_error=on_error,
+                          on_close=on_close)
         ws.on_open = on_open
         ws.run_forever()
     except Exception as e:
@@ -24,6 +23,7 @@ def connect_to_websocket():
         time.sleep(5)
         connect_to_websocket()
 
+# WebSocket event handlers
 def on_open(ws):
     print("WebSocket connection opened")
 
@@ -52,26 +52,23 @@ def send_to_websocket(message):
         print(f"Failed to send message: {e}")
         connect_to_websocket()
 
-from dotenv import load_dotenv, dotenv_values
-
-# loading variables from .env file
+# Load environment variables
 load_dotenv()
-
-# accessing and printing value
 token = os.getenv("DISCORD_API")
 
-ws = websocket.WebSocket()
+# Initialize WebSocket connection
+ws = WebSocket()
 ws.connect(bot_url)
 
+# Set up Discord client with all intents
 intents = discord.Intents.all()
 client = discord.Client(intents=intents)
 
-
+# Discord event handlers
 @client.event
 async def on_ready():
     print(f'Logged in as {client.user} (ID: {client.user.id})')
     print('------')
-
 
 @client.event
 async def on_message(message):
@@ -81,6 +78,5 @@ async def on_message(message):
     print(message.content)
     send_to_websocket(message)
 
+# Run the Discord client
 client.run(token)
-# %%
-

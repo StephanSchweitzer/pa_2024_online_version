@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="WebServers">
+    <option name="servers">
+      <webServer id="941ec939-d082-4e16-b6ed-0d82b6de4241" name="pa_server_discord_bot_folder" url="https://deepwoke.com/discord_bots">
+        <fileTransfer rootFolder="/var/www/deepwoke.com/pa_2024_online_version/discord_scripts" accessType="SFTP" host="165.22.205.196" port="22" sshConfigId="342f68b7-da91-4f2e-8781-7c9301bb10a0" sshConfig="root@165.22.205.196:22 password">
+          <advancedOptions>
+            <advancedOptions dataProtectionLevel="Private" keepAliveTimeout="0" passiveMode="true" shareSSLContext="true" />
+          </advancedOptions>
+        </fileTransfer>
+      </webServer>
+    </option>
+  </component>
+</project>
