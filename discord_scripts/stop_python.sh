@@ -1,10 +1,15 @@
 #!/bin/bash
 
-# Kill the process using the stored PID
-if [ -f python_pid.txt ]; then
-    kill $(cat python_pid.txt)
-    rm python_pid.txt
-    echo "Python script stopped."
+# Find the PID of the python script named discord_boy.py and kill it
+pids=$(pgrep -f discord_bot.py)
+
+if [ -z "$pids" ]; then
+    echo "No Python script named discord_bot.py is running."
 else
-    echo "No Python script running."
+    echo "Found the following PIDs for discord_boy.py: $pids"
+    for pid in $pids; do
+        echo "Killing Python script with PID $pid."
+        kill $pid
+    done
+    echo "All specified Python scripts have been stopped."
 fi

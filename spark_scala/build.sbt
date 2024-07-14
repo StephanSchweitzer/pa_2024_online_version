@@ -17,5 +17,6 @@ lazy val root = (project in file("."))
       "org.apache.logging.log4j" % "log4j-core" % "2.14.1",
       "org.apache.logging.log4j" % "log4j-api" % "2.14.1",
       "org.mongodb.spark" %% "mongo-spark-connector" % "10.3.0"
-    )
+    ),
+    mainClass in Compile := Some("Main")
   )
