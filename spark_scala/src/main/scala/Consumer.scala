@@ -139,7 +139,7 @@ object Consumer {
 
     // Function to call the hate speech detection API
     def detectHateSpeech(messages: Seq[Message]): Seq[HateSpeechDetectionResponse] = {
-      val url = new URL("http://deepwoke.com/api")
+      val url = new URL("https://deepwoke.com/predict/classify_batch")
       val connection = url.openConnection().asInstanceOf[HttpURLConnection]
       connection.setRequestMethod("POST")
       connection.setRequestProperty("Content-Type", "application/json; charset=UTF-8")
@@ -167,7 +167,7 @@ object Consumer {
         inputStream.close()
         org.json4s.jackson.JsonMethods.parse(response.toString).extract[Seq[HateSpeechDetectionResponse]]
       } else {
-        println("dead")
+        println(connection)
         Seq.empty[HateSpeechDetectionResponse]
       }
     }

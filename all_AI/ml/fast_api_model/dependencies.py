@@ -1,4 +1,4 @@
-from keras_core.src.saving import load_model
+from keras_core.models import load_model
 
 folder_model = "../ml_core/model_weights/"
 
