@@ -2,11 +2,14 @@ import discord
 import os
 import json
 import time
+
+import requests
 from websocket import WebSocketApp, WebSocket
 from dotenv import load_dotenv, dotenv_values
 
 # Set the WebSocket URL to the server's address
 bot_url = "wss://deepwoke.com/ws"
+api_url = "https://deepwoke.com/predict/classify"
 
 # Function to connect to the WebSocket
 def connect_to_websocket():
@@ -52,6 +55,13 @@ def send_to_websocket(message):
         print(f"Failed to send message: {e}")
         connect_to_websocket()
 
+
+def send_to_model_api(message) -> float:
+
+    message_obj = {"text": message.content}
+    response = requests.post(api_url, json=message_obj)
+    return float(response.json()['class'])
+
 # Load environment variables
 load_dotenv()
 token = os.getenv("DISCORD_API")
@@ -76,6 +86,12 @@ async def on_message(message):
         return
     print(message.author)
     print(message.content)
+    #await message.channel.send("recived")
+    response = send_to_model_api(message)
+    if (response > 0.5):
+        await message.channel.send("PROBLÉMATIQUE !!!")
+    await message.channel.send(response)
+
     send_to_websocket(message)
 
 # Run the Discord client

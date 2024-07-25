@@ -1,15 +1,15 @@
 import sys
 from pathlib import Path
 
-# Add the parent directory of 'ml' to the Python path
-sys.path.append(str(Path(__file__).resolve().parent.parent.parent))
+Add the parent directory of 'ml' to the Python path
+sys.path.append(str(Path(file).resolve().parent.parent.parent))
 
 from fastapi import FastAPI
 from typing import List
 from pydantic import BaseModel
 import fasttext
 import numpy as np
-from ml.fast_api_model.dependencies import predict_class
+from ml.fastapimodel.dependencies import predict_class
 
 class PredictionRequest(BaseModel):
     text: str
@@ -25,8 +25,8 @@ class PredictionRequestBatch(BaseModel):
 
 app = FastAPI()
 
-# Load FastText model
-file_path = Path(__file__).resolve().parent.parent / "ml_core" / "data" / "embedding_data" / "cc.fr.300.bin"
+Load FastText model
+file_path = Path(__file).resolve().parent.parent / "ml_core" / "data" / "embedding_data" / "cc.fr.300.bin"
 if not file_path.exists():
     raise ValueError(f"{file_path} cannot be opened for loading!")
 
@@ -51,6 +51,23 @@ async def classify(request: PredictionRequest):
 
     ### call the embedder
     text_to_vectors = np.expand_dims(text_to_vector(request.text), axis=0)
+
+    ### call for prediction
+    classification = predict_class(text_to_vectors)
+
+    print(f"CLASSIFICATION \n {classification[0][0]}")
+
+    if classification is None:
+        raise HTTPException(status_code=404, detail="Classification failed")
+    return {"class": str(classification[0][0])}
+
+
+@app.post("//classify_best/")
+async def classify(request: PredictionRequest):
+    #print(request.text)
+
+    ### call the embedder
+    text_to_vectors = np.expand_dims(text_to_vector("test"), axis=0)
 
     ### call for prediction
     classification = predict_class(text_to_vectors)
